@@ -17,6 +17,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminDashboard() {
   const data = await getDashboardData();
   const tasks = [
+    { title: "Run business operations", href: "/admin/business", description: "Open your private workspace for clients, delivery, payments, and the next action." },
     { title: "Edit homepage text", href: "/admin/page-builder", description: "Change the hero, sections, FAQs, and buttons." },
     { title: "Find a page editor", href: "/admin/content", description: "See where each part of your website is managed." },
     { title: "Review project inquiries", href: "/admin/leads", description: "Read messages and follow up with potential clients." },

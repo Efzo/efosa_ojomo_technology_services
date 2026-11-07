@@ -28,7 +28,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     {isMobileOpen && <button aria-label="Close site manager menu" type="button" onClick={closeMobile} className="fixed inset-0 z-40 bg-black/60 md:hidden" />}
     <aside id="admin-sidebar" onKeyDown={(event) => { if (event.key === "Escape" && isMobileOpen) closeMobile(); }} className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-glass bg-midnight/95 backdrop-blur-xl transition-all duration-300 ${isCollapsed ? "md:w-20" : "md:w-72"} ${isMobileOpen ? "translate-x-0" : "invisible -translate-x-full md:visible md:translate-x-0"}`}>
       <div className="flex h-20 shrink-0 items-center justify-between border-b border-glass px-5">
-        <Link href="/admin" onClick={() => setIsMobileOpen(false)} className={collapsedLabel}><span className="block text-lg font-bold">Website Manager</span><span className="text-xs text-slate-muted">OjomoEfosa.com</span></Link>
+        <Link href="/admin" onClick={() => setIsMobileOpen(false)} className={collapsedLabel}><span className="block text-lg font-bold">Admin Workspace</span><span className="text-xs text-slate-muted">Business & Website</span></Link>
         <button type="button" aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!isCollapsed} onClick={() => setIsCollapsed(!isCollapsed)} className="hidden rounded-lg p-2 text-slate-muted hover:bg-white/10 md:block"><ChevronLeft className={`h-5 w-5 ${isCollapsed ? "rotate-180" : ""}`} /></button>
         <button type="button" aria-label="Close site manager menu" onClick={closeMobile} className="p-2 md:hidden"><X className="h-5 w-5" /></button>
       </div>

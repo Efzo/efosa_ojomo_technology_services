@@ -2,6 +2,7 @@ import { BarChart3, BookOpen, BriefcaseBusiness, CalendarDays, FileText, FolderO
 
 export const adminGroups = [
   { id: "overview", name: "Start Here", description: "Find your way around and see what needs attention.", items: [
+    { name: "Business Operations", href: "/admin/business", icon: BriefcaseBusiness, description: "Run clients, engagements, delivery, invoices, expenses, time, and follow-ups in your private owner workspace." },
     { name: "Overview", href: "/admin", icon: LayoutDashboard, description: "See new inquiries, content totals, and shortcuts to common tasks." },
     { name: "Business Model & Positioning", href: "/admin/business-model", icon: BriefcaseBusiness, description: "Set up your four service pillars, two customer paths, project offers, and monthly care plans." },
     { name: "Where to Edit", href: "/admin/content", icon: ListTree, description: "Find the right editor for each website page and see what can be changed." },
