@@ -89,7 +89,7 @@ export default function BusinessWorkspace({ section, data, query, status, client
   return <div className="business-app">
     <header className="business-heading"><div><p className="business-eyebrow"><ShieldCheck size={14} aria-hidden="true" /> Private owner workspace</p><h1>Business operations</h1><p className="business-brand">{data.profile.name || BUSINESS_NAME}</p></div><Link href="/admin/leads" className="business-button-secondary">Website inquiries <ArrowUpRight size={15} /></Link></header>
     <nav aria-label="Business operations" className="business-tabs">{sections.map(s => <Link href={s.id === "overview" ? "/admin/business" : `/admin/business/${s.id}`} key={s.id} aria-current={section === s.id ? "page" : undefined}>{s.label}</Link>)}</nav>
-    {!data.available && <div className="business-notice" role="status"><strong>Workspace setup required</strong><p>{data.message}</p><Link href="/admin/settings#connections">Review connections</Link></div>}
+    {!data.available && <div className="business-notice" role="status"><strong>{data.issue?.title ?? "Workspace setup required"}</strong><p>{data.message}</p><Link href={data.issue?.href ?? "/admin/settings#connections"}>{data.issue?.linkLabel ?? "Review connections"}</Link></div>}
     {notice && !selected && <div className={`business-notice ${notice.success ? "business-notice-good" : ""}`} role={notice.success ? "status" : "alert"}>{notice.message}</div>}
     {section === "overview" ? <>
       <div className="business-intro"><div><h2>A clear next step for every client.</h2><p>Follow up, deliver the agreed work, and keep the money organized.</p></div><span>{dateText(todayInAustin())} · Central time</span></div>

@@ -1,9 +1,11 @@
+import { businessWorkspaceIssue } from "./availability";
 import { prisma } from "@/lib/prisma";
 import { businessDatabaseReady, requireBusinessOwner } from "./access";
 import { BUSINESS_NAME, todayInAustin, invoiceState, profileSchema, type BusinessRow, type Choice, type Section, type Entity } from "./config";
 
 export type PaymentRow = { id: string; kind: string; amountCents: number; feeCents: number; date: string; method: string; reference: string; notes: string };
 export type WorkspaceData = {
+  issue?: ReturnType<typeof businessWorkspaceIssue>;
   available: boolean; message: string; rows: BusinessRow[]; total: number; page: number; pages: number;
   clients: Choice[]; engagements: Choice[]; optionsLimited: boolean; leads: { id: string; company: string; name: string }[];
   profile: { name: string; email: string; address: string; paymentInstructions: string; weeklyHours: number };
@@ -99,5 +101,10 @@ export async function getBusinessWorkspace(section: Section, query: string, requ
       if (section === "clients") data.leads = await prisma.lead.findMany({ where: { businessClient: null }, select: { id: true, company: true, name: true }, orderBy: { createdAt: "desc" }, take: 50 });
     }
     return { ...data, available: true };
-  } catch { return { ...initial(), message: "Business records are unavailable. Check PostgreSQL connectivity and apply the business workspace migration. No changes have been made." }; }
+  } catch (error) {
+    const issue = businessWorkspaceIssue(error);
+    // Log only the stable diagnostic code, never credentials or raw provider errors.
+    console.error("[business] workspace_read_failed", issue.code);
+    return { ...initial(), issue, message: issue.message };
+  }
 }

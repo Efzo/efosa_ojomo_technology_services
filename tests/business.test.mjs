@@ -81,3 +81,25 @@ test('CSV quotes cells and neutralizes formula injection including leading white
   assert.equal(csvCell('A "quote", here'), '"A ""quote"", here"');
   for (const input of ['=SUM(A1)', '+cmd', '-cmd', '@cmd', '  =cmd', '\tcmd']) assert.ok(csvCell(input).startsWith('"\''));
 });
+
+test('workspace errors distinguish missing schema from connectivity without exposing provider details', () => {
+  const { businessWorkspaceIssue } = load('src/lib/business/availability.ts');
+  for (const code of ['P2021', 'P2022']) {
+    const issue = businessWorkspaceIssue({ code, message: 'secret-connection-string' });
+    assert.match(issue.title, /database update required/); assert.match(issue.message, /database is reachable/); assert.ok(!JSON.stringify(issue).includes('secret-connection'));
+  }
+  for (const code of ['P1000', 'P1001', 'P1002', 'P1008', 'P1017', 'P2024']) assert.match(businessWorkspaceIssue({ errorCode: code }).title, /connection unavailable/);
+  const unknown = businessWorkspaceIssue({ code: 'secret-url', message: 'sensitive value' });
+  assert.equal(unknown.code, 'unknown'); assert.match(unknown.title, /temporarily unavailable/); assert.ok(!JSON.stringify(unknown).includes('sensitive value'));
+});
+test('missing business tables produce a migration-specific state instead of claiming storage is disconnected', async () => {
+  const availability = load('src/lib/business/availability.ts');
+  const originalError = console.error; const logged = []; console.error = (...args) => logged.push(args);
+  const data = load('src/lib/business/data.ts', { './availability': availability, './config': config, './access': { requireBusinessOwner: async () => 'owner', businessDatabaseReady: () => true }, '@/lib/prisma': { prisma: { businessClient: { findMany: async () => { throw { code: 'P2021', message: 'private-password' }; } }, businessEngagement: { findMany: async () => [] }, siteSetting: { findUnique: async () => null } } } });
+  try {
+    const result = await data.getBusinessWorkspace('overview', '', 1, '');
+    assert.equal(result.available, false); assert.equal(result.issue.title, 'Workspace database update required');
+    assert.match(result.message, /database is reachable/); assert.ok(!JSON.stringify(result).includes('private-password'));
+    assert.deepEqual(logged, [['[business] workspace_read_failed', 'P2021']]);
+  } finally { console.error = originalError; }
+});

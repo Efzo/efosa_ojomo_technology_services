@@ -25,7 +25,7 @@ const session = { user: { email: 'business-owner@example.test', role: 'OWNER' } 
 const access = load('src/lib/business/access.ts', { 'next-auth': { getServerSession: async () => session }, '@/lib/auth': { authOptions: {} }, '@/lib/prisma': { prisma } });
 const mocks = { '@/lib/prisma': { prisma }, '@/lib/business/access': access, '@/lib/business/config': config, '@/lib/business/fields': { fields }, 'next/cache': { revalidatePath() {} } };
 const actions = load('src/app/actions/business.ts', mocks);
-const dataModule = load('src/lib/business/data.ts', { '@/lib/prisma': { prisma }, './access': access, './config': config });
+const dataModule = load('src/lib/business/data.ts', { '@/lib/prisma': { prisma }, './access': access, './config': config, './availability': load('src/lib/business/availability.ts') });
 const original = { ...process.env };
 Object.assign(process.env, { DEMO_MODE: 'false', DATABASE_URL: url });
 const today = config.todayInAustin();

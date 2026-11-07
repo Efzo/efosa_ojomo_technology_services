@@ -69,3 +69,11 @@ Save any metadata edits before uploading. After attachment, the editor reloads t
 Private downloads require the owner's current session/role, use attachment disposition, no-store/noindex headers, and nosniff/sandbox protections. Files are not exposed through public media routes or to website editors/viewers. Callback and browser completion registration are idempotent and retry serializable conflicts, so retries do not create duplicate versions. No file deletion or automatic customer sharing/signing is implemented.
 
 Both database migrations and a configured private Vercel Blob store are required in the intended environment. The document-files migration and registration/version workflow were tested on isolated localhost PostgreSQL with mocked Blob metadata. Actual cloud upload/download credentials, signed provider callbacks, and a live production file transfer were not exercised. No client files were uploaded to your configured storage during implementation.
+
+## A connected database can still need a schema update
+
+Database configuration and file-storage configuration do not create the business tables. `npm run build` generates Prisma Client but does not apply migrations. Run the pending migrations against the database used by the intended environment, not a different local `.env` database.
+
+The workspace distinguishes missing tables/columns (Prisma P2021/P2022) from database-connection failures. Server diagnostics log only a stable error code; connection strings and provider errors are not returned to the browser.
+
+For a controlled release, `scripts/check-business-schema.mjs` reports table/migration metadata without customer data. `--require-business` additionally verifies all nine model queries. If production database credentials are sensitive/write-only in Vercel, execute migrations inside the verified production project's build environment instead of exporting secrets. A one-time build command can run `npx prisma generate && node scripts/check-business-schema.mjs && npm run db:migrate && node scripts/check-business-schema.mjs --require-business && npm run build`. Review existing migration history before enabling this command; if the database is unbaselined or has failed migrations, stop and reconcile history first. Do not reset the database or use `db push --accept-data-loss`.
