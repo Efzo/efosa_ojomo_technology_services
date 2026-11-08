@@ -50,6 +50,26 @@ export default function BusinessWorkspace({ section, data, query, status, client
   const [draft, setDraft] = useState<Record<string, string>>(() => initialRecord && entity ? editValues(entity, initialRecord) : startNew ? { ...blank("document", section), clientId, folder: folder || "GENERAL", body: "" } : {});
   const dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => { if (selected && !dialog.current?.open) dialog.current?.showModal(); else if (!selected) dialog.current?.close(); }, [selected]);
+  useEffect(() => {
+    if (!selected || mode !== "print") return;
+    const preview = dialog.current;
+    let restorePreview = false;
+    // A modal stays in the browser's top layer even when its ancestors are hidden.
+    // Print only the document portal, then restore the preview after save/cancel.
+    const beforePrint = () => {
+      if (preview?.open) { restorePreview = true; preview.close(); }
+    };
+    const afterPrint = () => {
+      if (restorePreview && preview?.isConnected && !preview.open) preview.showModal();
+      restorePreview = false;
+    };
+    window.addEventListener("beforeprint", beforePrint);
+    window.addEventListener("afterprint", afterPrint);
+    return () => {
+      window.removeEventListener("beforeprint", beforePrint);
+      window.removeEventListener("afterprint", afterPrint);
+    };
+  }, [selected, mode]);
   const [profile, setProfile] = useState(data.profile);
   function open(row: BusinessRow | "new", nextMode: typeof mode = "edit") {
     setNotice(null); setMode(nextMode);

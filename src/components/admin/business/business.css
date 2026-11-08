@@ -2,5 +2,42 @@
 @media(max-width:1200px){.business-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:800px){.business-dashboard-grid{grid-template-columns:1fr}.business-routine{flex-wrap:wrap}.business-tabs{margin-right:-16px}.business-stats{gap:10px}.business-stat{padding:18px}.business-stat strong{font-size:25px}.business-record-list article{gap:16px}.business-record-meta{max-width:42%}.business-actions{width:100%}}@media(max-width:540px){.business-form-grid{grid-template-columns:1fr}.business-field-wide{grid-column:auto}.business-dialog{padding:20px}.business-dialog-footer{bottom:-20px}.business-record-list article{flex-direction:column}.business-record-meta{flex-direction:row;align-items:center;flex-wrap:wrap;max-width:none;justify-content:space-between}.business-record-meta>strong{text-align:left}.business-row-actions{width:100%;justify-content:flex-start}.business-print{padding:22px}.business-stat small{font-size:10px}.business-heading>.business-button-secondary{display:none}}
 
 .business-print-root{display:none}
-@media print{body> :not(.business-print-root){display:none!important}html,body{background:white!important;color:#152737!important;height:auto!important;min-height:0!important;overflow:visible!important;margin:0!important;padding:0!important}.business-print-root{display:block!important}.business-print-root .business-print{padding:0!important;background:white!important;color:#152737!important;border-radius:0!important;font-size:11pt!important}.business-print-root .business-print h1{font-size:22pt!important}.business-print-root .business-print a{overflow-wrap:anywhere}.business-print-root .business-document-body{white-space:pre-wrap;overflow-wrap:anywhere}@page{margin:18mm}}
+@media print {
+  @page { margin: 18mm; }
+  body > :not(.business-print-root), .business-dialog, .business-dialog::backdrop {
+    display: none !important;
+  }
+  html, body {
+    background: white !important;
+    color: #152737 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .business-print-root { display: block !important; }
+  .business-print-root .business-print {
+    padding: 0 !important;
+    background: white !important;
+    color: #152737 !important;
+    border-radius: 0 !important;
+    font-size: 11pt !important;
+    line-height: 1.5;
+  }
+  .business-print-root .business-print h1 {
+    font-size: 22pt !important;
+    overflow-wrap: anywhere;
+    break-after: avoid;
+  }
+  .business-print-root .business-print dl {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .business-print-root .business-print a { overflow-wrap: anywhere; }
+  .business-print-root .business-document-body {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+}
 .business-file-library{border-top:1px solid var(--biz-line);padding-top:24px;margin-top:26px}.business-file-library h3{font-size:16px;font-weight:600}.business-file-history{margin:20px 0}.business-file-history>li{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:17px 0;border-bottom:1px solid var(--biz-line)}.business-file-history>li>div{min-width:0}.business-file-history strong{display:block;font-size:13px;font-weight:600}.business-file-history span,.business-file-history small{display:block;color:var(--biz-muted);font-size:11px;line-height:1.8;margin-top:5px;overflow-wrap:anywhere}.business-file-history p{font-size:12px;line-height:1.7;margin-top:6px;white-space:pre-wrap;overflow-wrap:anywhere}.business-file-upload{margin:22px 0 12px;padding:18px;border:1px solid var(--biz-line);border-radius:9px}.business-file-upload legend{padding:0 8px;font-size:13px;font-weight:550}.business-file-upload input[type=file]{font-size:12px;max-width:100%}.business-file-upload input[type=file]::file-selector-button{padding:8px 12px;border:1px solid #9eb1cc3a;background:#ffffff09;border-radius:6px;color:#e9eef5;margin-right:10px}.business-file-message{color:var(--biz-accent);font-size:12px;line-height:1.8;margin-top:12px}.business-client-files-link{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--biz-accent);margin-top:10px}.business-filters select[name=client]{max-width:300px}.business-file-library .business-pagination button{color:var(--biz-accent)}@media(max-width:540px){.business-file-history>li{flex-direction:column}.business-file-library .business-button-secondary{margin-bottom:8px}.business-filters select[name=client]{max-width:100%}}

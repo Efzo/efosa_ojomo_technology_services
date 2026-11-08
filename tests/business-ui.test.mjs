@@ -53,8 +53,17 @@ test('printable invoice lives outside the admin layout and escapes stored text',
     assert.ok(print, 'print content has an independent document-level container');
     assert.ok(print.textContent.includes('$38.00')); assert.ok(print.textContent.includes('<script>alert(1)</script>'));
     assert.equal(print.querySelector('script'), null); assert.ok(!print.textContent.includes('Website inquiries'));
+    const preview = document.querySelector('dialog');
+    assert.equal(preview.open, true);
+    await act(async () => window.dispatchEvent(new window.Event('beforeprint')));
+    assert.equal(preview.open, false, 'printing removes the modal from the top layer');
+    assert.equal(document.querySelector('body > .business-print-root'), print);
+    await act(async () => window.dispatchEvent(new window.Event('afterprint')));
+    assert.equal(preview.open, true, 'save or cancel restores the document preview');
     await act(async () => document.querySelector('[aria-label="Close record"]').click());
     assert.equal(document.querySelector('.business-print-root'), null);
+    await act(async () => window.dispatchEvent(new window.Event('afterprint')));
+    assert.equal(preview.open, false, 'a dismissed preview is not reopened by a stale print event');
   } finally { await mounted.close(); }
 });
 
