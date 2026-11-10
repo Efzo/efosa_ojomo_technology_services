@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
-import { revalidatePath } from "next/cache";
+import { revalidatePublicPath as revalidatePath } from "@/lib/public-cache";
 
 const videoSchema = z.object({
   id: z.string().optional(),

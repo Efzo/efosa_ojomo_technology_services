@@ -1,3 +1,4 @@
+import { publicCacheMock } from "./helpers/public-cache.mjs";
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -10,7 +11,7 @@ function load(file, mocks = {}) {
   const source = readFileSync(new URL(`../${file}`, import.meta.url), 'utf8');
   const js = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true } }).outputText;
   const exports = {};
-  new Function('require', 'exports', js)((name) => name in mocks ? mocks[name] : require(name), exports);
+  new Function('require', 'exports', js)((name) => name in mocks ? mocks[name] : name === '@/lib/public-cache' ? publicCacheMock(mocks) : require(name), exports);
   return exports;
 }
 const detailsModule = load('src/lib/case-details.ts');

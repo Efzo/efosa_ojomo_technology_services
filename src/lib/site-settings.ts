@@ -1,3 +1,4 @@
+import { publicRead } from "@/lib/public-cache";
 import { prisma } from "@/lib/prisma";
 
 import { pricingPlans as fallbackPricingPlans, pricingPlansSchema, pricingCatalogKey, type PricingPlan } from "@/data/pricing";
@@ -71,7 +72,7 @@ async function readJsonSetting<T>(key: string, fallback: T): Promise<T> {
     try { return JSON.parse(demoValue) as T; } catch { return fallback; }
   }
   try {
-    const record = await prisma.siteSetting.findUnique({ where: { key } });
+    const record = await publicRead(`setting:${key}`, () => prisma.siteSetting.findUnique({ where: { key } }));
     return record?.value ? record.value as T : fallback;
   } catch {
     return fallback;
@@ -89,7 +90,7 @@ export async function getFooterSettings(): Promise<FooterSettings> {
   if (!dbReady()) return defaults;
 
   try {
-    const records = await prisma.siteSetting.findMany({ where: { key: { startsWith: "footer." } } });
+    const records = await publicRead("footer", () => prisma.siteSetting.findMany({ where: { key: { startsWith: "footer." } } }));
     for (const record of records) {
       const key = record.key.replace(/^footer\./, "") as keyof typeof footerSettingDefaults;
       if (key in defaults && typeof record.value === "string") defaults[key] = record.value;
@@ -116,7 +117,7 @@ export async function getContactBudgetOptions(): Promise<ContactBudgetOption[]> 
   }
 
   try {
-    const record = await prisma.siteSetting.findUnique({ where: { key: "contact.budgetOptions" } });
+    const record = await publicRead("contact-budgets", () => prisma.siteSetting.findUnique({ where: { key: "contact.budgetOptions" } }));
     if (!Array.isArray(record?.value)) return contactBudgetDefaults;
     const options = record.value.filter((option): option is ContactBudgetOption => {
       if (!option || typeof option !== "object") return false;

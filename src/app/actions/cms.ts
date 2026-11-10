@@ -9,7 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { consumeDemoResetToken, createDemoResetToken, setDemoPassword } from "@/lib/demo-password";
 import { footerSettingDefaults, setDemoSiteSetting } from "@/lib/site-settings";
 import { sanitizeRichText } from "@/lib/rich-text";
-import { revalidatePath } from "next/cache";
+import { revalidatePublicPath as revalidatePath } from "@/lib/public-cache";
 import { blogOptionsSchema, blogOptionsKey, blogImageUrlSchema } from "@/lib/blog-options";
 import { homeSchema } from "@/lib/home-content";
 import { caseDetailsSchema, screenshotUrlSchema } from "@/lib/case-details";

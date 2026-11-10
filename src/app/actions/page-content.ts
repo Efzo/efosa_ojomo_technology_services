@@ -5,7 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
-import { revalidatePath } from "next/cache";
+import { revalidatePublicPath as revalidatePath } from "@/lib/public-cache";
 import { isSiteSettingsDatabaseReady } from "@/lib/site-settings";
 import { isManagedPageSlug, managedPageNames, parsePageContent, pagePath } from "@/lib/page-content-schema";
 

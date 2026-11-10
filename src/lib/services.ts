@@ -1,3 +1,4 @@
+import { publicRead } from "@/lib/public-cache";
 import { services as fallbackServices, serviceAliases, type Service } from "@/data/services";
 import { prisma } from "@/lib/prisma";
 
@@ -17,9 +18,9 @@ function databaseReady() {
 export async function getManagedServices(): Promise<ManagedService[]> {
   if (!databaseReady()) return fallbackServices;
   try {
-    const records = await prisma.service.findMany({ orderBy: { createdAt: "asc" } });
-    if (!records.length && await prisma.siteSetting.findUnique({ where: { key: "consulting.initialized" } })) return [];
-    return records.length ? records.filter((service) => service.isPublished && service.slug !== "introductory-discovery-call" && !Object.hasOwn(serviceAliases, service.slug)) : fallbackServices;
+    const records = await publicRead("services", () => prisma.service.findMany({ orderBy: { createdAt: "asc" } }));
+    if (!records.length && await publicRead("consulting-initialized", () => prisma.siteSetting.findUnique({ where: { key: "consulting.initialized" } }))) return [];
+    return records.length ? records.map((record) => ({ ...record, updatedAt: new Date(record.updatedAt) })).filter((service) => service.isPublished && service.slug !== "introductory-discovery-call" && !Object.hasOwn(serviceAliases, service.slug)) : fallbackServices;
   } catch (error) {
     const failure = error as { code?: unknown; errorCode?: unknown; name?: unknown; message?: unknown } | null;
     const code = failure?.code ?? failure?.errorCode;

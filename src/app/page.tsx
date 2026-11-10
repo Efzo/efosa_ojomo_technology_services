@@ -1,3 +1,4 @@
+import { publicRead } from "@/lib/public-cache";
 import { getConsultantPortrait } from "@/lib/portraits";
 import { getManagedPageContent } from "@/lib/managed-pages";
 import { canPreviewPages } from "@/lib/managed-pages";
@@ -30,7 +31,7 @@ export default async function HomePage() {
   const portrait = { ...selectedPortrait, url: imageUrl(selectedPortrait.url) };
   const featuredUrl = featured?.images[0];
   const mediaId = featuredUrl?.startsWith("/api/media/") ? featuredUrl.split("/").pop() : undefined;
-  const media = mediaId ? await prisma.mediaAsset.findUnique({ where: { id: mediaId }, select: { altText: true } }).catch(() => null) : null;
+  const media = mediaId ? await publicRead(`media-alt:${mediaId}`, () => prisma.mediaAsset.findUnique({ where: { id: mediaId }, select: { altText: true } })).catch(() => null) : null;
   const projectImage = featuredUrl ? { url: imageUrl(featuredUrl), alt: media?.altText || `${featured?.title} project screenshot` } : undefined;
   const sections = {
     hero: <Hero content={content.hero} portrait={portrait} />,
@@ -50,7 +51,7 @@ export default async function HomePage() {
 
 export async function generateMetadata() {
   const content = await getHomePageContent();
-  const record = isSiteSettingsDatabaseReady() ? await prisma.siteSetting.findUnique({ where: { key: "homepage.seo" } }).catch(() => null) : null;
+  const record = isSiteSettingsDatabaseReady() ? await publicRead("homepage-seo", () => prisma.siteSetting.findUnique({ where: { key: "homepage.seo" } })).catch(() => null) : null;
   const draft = isSiteSettingsDatabaseReady() && await canPreviewPages() ? await prisma.page.findUnique({ where: { slug: "home" } }).catch(() => null) : null;
   const seo = draft ? { title: draft.metaTitle ?? undefined, description: draft.metaDescription ?? undefined } : record?.value as { title?: string; description?: string } | undefined;
   return pageMetadata(seo?.title || "Your Technology Partner", seo?.description || content.hero.subheadline, "/");
